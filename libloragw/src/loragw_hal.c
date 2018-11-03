@@ -831,8 +831,8 @@ int lgw_start(void) {
 	setup_sx125x(1, rf_rx_freq[1]);
 
 	/* gives AGC control of GPIOs to enable Tx external digital filter */
-	lgw_reg_w(LGW_GPIO_MODE,31); /* Set all GPIOs as output */
-	lgw_reg_w(LGW_GPIO_SELECT_OUTPUT,2);
+	//lgw_reg_w(LGW_GPIO_MODE,31); /* Set all GPIOs as output */
+	//lgw_reg_w(LGW_GPIO_SELECT_OUTPUT,2);
 
 	/* GPIOs table :
 	DGPIO0 -> N/A
@@ -840,6 +840,18 @@ int lgw_start(void) {
 	DGPIO2 -> N/A
 	DGPIO3 -> TX digital filter ON
 	DGPIO4 -> TX ON
+	*/
+
+	/* Rx and Tx packets signalling through GPIOs */
+	lgw_reg_w(LGW_GPIO_MODE,31); /* Set all GPIOs as output */
+	lgw_reg_w(LGW_GPIO_SELECT_OUTPUT,0);
+	/*
+	GPIOs table will be then as follow (refer to Table 7 of SX1301 DS, SELECT_OUTPUT mode = 0):
+	GPIO[0] -> TX_ON (Tx packet is sent)
+	GPIO[1] -> FSK_PKT (Rx packet received on IF9 FSK channel)
+	GPIO[2] -> BH_PKT (Rx packet received on IF8 backhaul LoRa channel)
+	GPIO[3] -> SENSOR_PKT (Rx packet received on any IF0 to IF7 LoRa channel)
+	GPIO[4] -> RX_BUFFER_NOT_EMPTY (Rx packet received from any LoRa/FSK channel and present in the Rx buffer FIFO)
 	*/
 
 	/* select calibration command */
